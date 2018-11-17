@@ -62,12 +62,13 @@ class FantasyDataBase(object):
     def merge_historical(self, file_path, current_df):
         historical_df = self.check_if_file_exist(file_path)
         historical_df = pd.concat((historical_df, current_df)).drop_duplicates()
-        historical_df.to_csv(file_path,
-                                 index=False, compression='gzip')
+        historical_df.to_csv(file_path, index=False, compression='gzip')
 
 
 class FantasyData(FantasyDataBase):
-
+    
+    # TODO: Create a date/gameid wrapper for all get functions
+    # TODO: fix get_historical_scoreboard_data to look like other get functions.
     def get_historical_scoreboard_data(self, start_date, end_date):
         date_list = self.create_date_list(start_date, end_date)
 
@@ -98,19 +99,14 @@ class FantasyData(FantasyDataBase):
 
     def get_boxscore_traditionalv2_data(self, gameid):
         boxscore_response = boxscoretraditionalv2.BoxScoreTraditionalV2(game_id='00' + gameid
-                                                                  ).nba_response
+                                                                        ).nba_response
         boxscore_df = self.create_response_df(boxscore_response, 'PlayerStats')
         # check if file exist
         self.merge_historical(self._boxscore_traditionalv2_path, boxscore_df)
 
     def get_boxscore_usagev2_data(self, gameid):
         boxscore_response = boxscoreusagev2.BoxScoreUsageV2(game_id='00' + gameid
-                                                                  ).nba_response
+                                                            ).nba_response
         boxscore_df = self.create_response_df(boxscore_response, 'sqlPlayersUsage')
         # check if file exist
         self.merge_historical(self._boxscore_usagev2_path, boxscore_df)
-
-
-
-
-
